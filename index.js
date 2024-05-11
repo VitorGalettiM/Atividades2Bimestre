@@ -1,45 +1,36 @@
-const lsVisistorsKey = '@visitorsCounter'
+window.onload = function() {
+  const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+  const main = document.querySelector('.container');
 
-const defaultLsVisitors = {
-  count: 0,
-  lastVisit: getCurrentDateAndTime(),
-}
+  for (const tarefa of tarefas) {
+      const div = document.createElement('div');
+      div.classList.add('tarefa');
+      div.textContent = `Título: ${tarefa.titulo}, Descrição: ${tarefa.descricao}`;
 
-function getCurrentDateAndTime() {
-  const locale = 'pt-BR'
-  const date = new Date()
-
-  options = {
-    day: 'numeric',
-    month: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
+      main.appendChild(div);
   }
-
-  const time = new Intl.DateTimeFormat(locale, options).format(date)
-  return time
 }
 
-function countVisitors() {
-  const lsVisitors =
-    localStorage.getItem(lsVisistorsKey) || JSON.stringify(defaultLsVisitors)
-  const lsVisitorsObj = JSON.parse(lsVisitors)
+function enviar(e) {
+  e.preventDefault();
 
-  lsVisitorsObj.count++
-  lsVisitorsObj.lastVisit = getCurrentDateAndTime()
+  const form = e.target
+  const formData = new FormData(form)
 
-  localStorage.setItem(lsVisistorsKey, JSON.stringify(lsVisitorsObj))
+  const titulo = formData.get('textinput');
+  const descricao = formData.get('tarefadesc');
 
-  const p = document.createElement('p')
-  p.id = 'visitors-counter'
-  p.textContent = `Esta página foi visitada ${lsVisitorsObj.count} vezes. A última visita foi: ${lsVisitorsObj.lastVisit}`
+  const tarefa = { titulo, descricao };
 
-  const footer = document.querySelector('footer')
+  const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+  tarefas.push(tarefa); 
 
-  footer.appendChild(p)
+  localStorage.setItem('tarefas', JSON.stringify(tarefas));
+
+  console.log('Tarefa adicionada ao localStorage:', tarefa);
+
+  form.reset();
+
+  window.location.reload();
+  
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  countVisitors()
-})
